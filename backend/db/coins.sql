@@ -1,0 +1,4 @@
+	CREATE TABLE coins (
+		CoinId INT NOT NULL AUTO_INCREMENT,
+		PRIMARY KEY (CoinId)
+	)
