@@ -1,41 +1,42 @@
-	CREATE TABLE coins (
-		ID INT PRIMARY KEY AUTOINCREMENT,
-		numista_id INT,
+	CREATE TABLE us_coins (
+		id INTEGEREGER PRIMARY KEY AUTOINCREMENT,
+		numista_id INTEGER,
 		name TEXT NOT NULL,
-		issuer TEXT NOT NULL,
-		years TEXT,
-		composition TEXT,
+		years TEXT NOT NULL,
+		composition TEXT NOT NULL,
 		description TEXT
 	);
 
-	CREATE TABLE coin_years (
-		ID INT PRIMARY KEY AUTOINCREMENT,
-		numista_id INT,
-		year INT,
-		mintage INT,
+	CREATE TABLE us_coin_years (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		coin_id INTEGER NOT NULL,
+		numista_id INTEGER,
+		year INTEGER,
+		mintage INTEGER,
 		mint_letter TEXT,
 		description TEXT,
-		coin_id INT NOT NULL
+		FOREIGN KEY (coin_id) REFERENCES us_coins(id)
 	);
 
-	CREATE TABLE coin_prices (
-		ID INT PRIMARY KEY AUTOINCREMENT,
-		g INT,
-		vg INT,
-		f INT,
-		vf INT,
-		xf INT,
-		au INT,
-		unc INT,
-		coin_year_id INT NOT NULL
+	CREATE TABLE us_coin_prices (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		coin_year_id INTEGER NOT NULL,
+		g INTEGER,
+		vg INTEGER,
+		f INTEGER,
+		vf INTEGER,
+		xf INTEGER,
+		au INTEGER,
+		unc INTEGER,
+		FOREIGN KEY (coin_year_id) REFERENCES us_coin_years(id)
 	);
 
 	CREATE TABLE collection (
-		ID INT PRIMARY KEY AUTOINCREMENT,
-		coin_id INT NOT NULL,
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		coin_id INTEGER NOT NULL,
 		condition TEXT,
 		tag TEXT,
 		image BLOB,
-		buy_price INT,
+		buy_price INTEGER,
 		note TEXT
 	);
