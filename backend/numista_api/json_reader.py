@@ -81,6 +81,9 @@ for filename in details_filenames:
 
 # write us_coin_details to file
 with open('coin_txt/us_coin_details.txt', 'w') as f:
+    # if file isn't empty, clear it
+    if os.path.getsize('coin_txt/us_coin_details.txt') > 0:
+        f.truncate(0)
     for coin in us_coin_details:
         f.write(f"{coin}\n")
 
@@ -136,3 +139,9 @@ for filename in years_filenames:
 
 # for el in us_coin_years:
 #     print(el)
+
+with open('coin_txt/us_coin_years.txt', 'w') as f:
+    if os.path.getsize('coin_txt/us_coin_years.txt') > 0:
+        f.truncate(0)
+    for year in us_coin_years:
+        f.write(f"{year}\n")
