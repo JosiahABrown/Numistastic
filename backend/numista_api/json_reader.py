@@ -28,6 +28,18 @@ details_filenames = [f"{path}/" + filename for filename in details_filenames]
 years_filenames = [f"{path}/" + filename for filename in years_filenames]
 
 
+# Check if "term" exists in file
+def extract_json(term, file):
+    term = str(term)
+    if term in file:
+        value = file[term]
+        if "\"" in term or "\'" in term:
+            value = term.replace("\"", "").replace("\'", "")
+    else:
+        value = "NULL"
+    return value
+
+
 def coin_details():
     us_coin_details = []
 
@@ -35,31 +47,10 @@ def coin_details():
         with open(filename, 'r') as f:
             data = json.load(f)
 
-        # Check if the "id" key exists and extract
-        if "id" in data:
-            numista_id = data["id"]
-        else:
-            numista_id = "NULL"
-
-        # Check if the "title" key exists in the file
-        if "title" in data:
-            title = data["title"]
-            if "\"" in title or "\'" in title:
-                title = title.replace("\"", "").replace("\'", "")
-        else:
-            title = "NULL"
-
-        # Check if the "min_year" key exists in the file
-        if "min_year" in data:
-            min_year = data["min_year"]
-        else:
-            min_year = "NULL"
-
-        # Check if the "max_year" key exists in the file
-        if "max_year" in data:
-            max_year = data["max_year"]
-        else:
-            max_year = "NULL"
+        numista_id = extract_json("id", data)
+        title = extract_json("title", data)
+        min_year = extract_json("min_year", data)
+        max_year = extract_json("max_year", data)
 
         # Check if the "composition" and "text" keys exist
         if "composition" in data and "text" in data["composition"]:
@@ -84,7 +75,7 @@ def coin_details():
             years,
             composition,
             comments
-            ])
+        ])
 
     # write us_coin_details to file
     with open('coin_txt/us_coin_details.txt', 'w') as f:
@@ -113,30 +104,11 @@ def coin_years():
 
         # loop through years
         for years in data:
-            if "id" in years:
-                numista_id = years["id"]
-            else:
-                numista_id = "NULL"
-
-            if "year" in years:
-                year = years["year"]
-            else:
-                year = "NULL"
-
-            if "mint_letter" in years:
-                mint_letter = years["mint_letter"]
-            else:
-                mint_letter = "NULL"
-
-            if "mintage" in years:
-                mintage = years["mintage"]
-            else:
-                mintage = "NULL"
-
-            if "comment" in years:
-                comment = years["comment"]
-            else:
-                comment = "NULL"
+            numista_id = extract_json("id", years)
+            year = extract_json("year", years)
+            mint_letter = extract_json("mint_letter", years)
+            mintage = extract_json("mintage", years)
+            comment = extract_json("comment", years)
 
             us_coin_years.append([
                 int(coin_id),
