@@ -39,44 +39,49 @@ def coin_details():
         if "id" in data:
             numista_id = data["id"]
         else:
-            numista_id = None
+            numista_id = "NULL"
 
         # Check if the "title" key exists in the file
         if "title" in data:
             title = data["title"]
+            if "\"" in title or "\'" in title:
+                title = title.replace("\"", "").replace("\'", "")
         else:
-            title = None
+            title = "NULL"
 
         # Check if the "min_year" key exists in the file
         if "min_year" in data:
             min_year = data["min_year"]
         else:
-            min_year = None
+            min_year = "NULL"
 
         # Check if the "max_year" key exists in the file
         if "max_year" in data:
             max_year = data["max_year"]
         else:
-            max_year = None
+            max_year = "NULL"
 
         # Check if the "composition" and "text" keys exist
         if "composition" in data and "text" in data["composition"]:
             composition = data["composition"]["text"]
         else:
-            composition = None
+            composition = "NULL"
 
         # Check if the "comments" key exists in the file
         if "comments" in data:
-            comments = data["comments"]
+            comments = data["comments"].strip()
+            if "\n" in comments or "\r\n" in comments:
+                comments = comments.replace("\n", " ").replace("\r\n", " ")
         else:
-            comments = None
+            comments = "NULL"
 
+        # convert min and max years to single string
+        years = f"{str(min_year)} - {str(max_year)}"
         # Append the values to a list
         us_coin_details.append([
             numista_id,
             title,
-            min_year,
-            max_year,
+            years,
             composition,
             comments
             ])
@@ -111,27 +116,27 @@ def coin_years():
             if "id" in years:
                 numista_id = years["id"]
             else:
-                numista_id = None
+                numista_id = "NULL"
 
             if "year" in years:
                 year = years["year"]
             else:
-                year = None
+                year = "NULL"
 
             if "mint_letter" in years:
                 mint_letter = years["mint_letter"]
             else:
-                mint_letter = None
+                mint_letter = "NULL"
 
             if "mintage" in years:
                 mintage = years["mintage"]
             else:
-                mintage = None
+                mintage = "NULL"
 
             if "comment" in years:
                 comment = years["comment"]
             else:
-                comment = None
+                comment = "NULL"
 
             us_coin_years.append([
                 int(coin_id),
