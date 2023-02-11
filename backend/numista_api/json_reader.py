@@ -2,6 +2,9 @@ import json
 import os
 import re
 
+import html as ihtml
+from bs4 import BeautifulSoup
+
 # Set the path to the directory containing the JSON files
 path = "./coin_json"
 
@@ -27,22 +30,37 @@ for file in os.listdir(path):
 details_filenames = [f"{path}/" + filename for filename in details_filenames]
 years_filenames = [f"{path}/" + filename for filename in years_filenames]
 
+# Add values to a sql file 
+def add_details_to_sql_file(file_path, *values):
+     with open(file_path, 'a') as f:
+        f.write(f"VALUES ({values[0]}, '{values[1]}', '{values[2]}', '{values[3]}', '{values[4]}');\n")
 
 # Check if "term" exists in file
-def extract_json(term, file):
+def extract_json(term, file, comment=False):
     term = str(term)
     if term in file:
         value = file[term]
+        # Double up '
+        # if isinstance(value, str) and comment==True:
+        #     value = re.sub("'", "''", value)
+        # Remove escape characters
         if "\"" in term or "\'" in term:
             value = term.replace("\"", "").replace("\'", "")
     else:
         value = "NULL"
     return value
 
+# Remove HTML tags
+def clean_text(text):
+    text = BeautifulSoup(ihtml.unescape(text), features="html.parser").text
+    text = re.sub(r"http[s]?://\S+", "", text)
+    text = re.sub(r"\s+", " ", text)    
+    text = re.sub(r"'", "''", text)
+    return text
+
 
 def coin_details():
-    us_coin_details = []
-
+    index = 1
     for filename in details_filenames:
         with open(filename, 'r') as f:
             data = json.load(f)
@@ -58,38 +76,25 @@ def coin_details():
         else:
             composition = "NULL"
 
-        # Check if the "comments" key exists in the file
         if "comments" in data:
-            comments = data["comments"].strip()
-            if "\n" in comments or "\r\n" in comments:
-                comments = comments.replace("\n", " ").replace("\r\n", " ")
+            comments = clean_text(data["comments"])
         else:
             comments = "NULL"
 
         # convert min and max years to single string
         years = f"{str(min_year)} - {str(max_year)}"
-        # Append the values to a list
-        us_coin_details.append([
-            numista_id,
-            title,
-            years,
-            composition,
-            comments
-        ])
 
-    # write us_coin_details to file
-    with open('coin_txt/us_coin_details.txt', 'w') as f:
-        # if file isn't empty, clear it
-        if os.path.getsize('coin_txt/us_coin_details.txt') > 0:
-            f.truncate(0)
-        for coin in us_coin_details:
-            f.write(f"{coin}\n")
+        # write us_coin_details to file
+        file = '../sql_files/us_coin_details.sql'
+        add_details_to_sql_file(file, numista_id, title, years, composition, comments)
+        index += 1
+        
+    print(index)
 
 
 def coin_years():
     # Regex to find the numbers in file name
     pattern = re.compile(fr"{path}/(\d+)_years\.json")
-
     us_coin_years = []
 
     for filename in years_filenames:
