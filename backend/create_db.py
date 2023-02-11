@@ -34,5 +34,6 @@ class Database:
 if __name__ == '__main__':
     db = Database(DB)
     # db.execute_sql_file('sql_files/coins_table.sql')
-    db.execute_sql_file('sql_files/us_coin_details.sql')
+    # db.execute_sql_file('sql_files/us_coin_details.sql')
+    db.execute_sql_file('sql_files/us_coin_years.sql')
     db.close()

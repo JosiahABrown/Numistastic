@@ -40,9 +40,6 @@ def extract_json(term, file, comment=False):
     term = str(term)
     if term in file:
         value = file[term]
-        # Double up '
-        # if isinstance(value, str) and comment==True:
-        #     value = re.sub("'", "''", value)
         # Remove escape characters
         if "\"" in term or "\'" in term:
             value = term.replace("\"", "").replace("\'", "")
@@ -95,7 +92,7 @@ def coin_details():
 def coin_years():
     # Regex to find the numbers in file name
     pattern = re.compile(fr"{path}/(\d+)_years\.json")
-    us_coin_years = []
+    file_path = '../sql_files/us_coin_years.sql'
 
     for filename in years_filenames:
         match = pattern.search(filename)
@@ -111,27 +108,16 @@ def coin_years():
         for years in data:
             numista_id = extract_json("id", years)
             year = extract_json("year", years)
-            mint_letter = extract_json("mint_letter", years)
             mintage = extract_json("mintage", years)
+            mint_letter = extract_json("mint_letter", years)
             comment = extract_json("comment", years)
-
-            us_coin_years.append([
-                int(coin_id),
-                numista_id,
-                year,
-                mint_letter,
-                mintage,
-                comment])
-
-    with open('coin_txt/us_coin_years.txt', 'w') as f:
-        if os.path.getsize('coin_txt/us_coin_years.txt') > 0:
-            f.truncate(0)
-        for year in us_coin_years:
-            f.write(f"{year}\n")
+            
+            with open(file_path, 'a') as f:
+                f.write(f"INSERT INTO us_coin_years (coin_id, numista_id, year, mintage, mint_letter, description) VALUES ({int(coin_id)}, {numista_id}, {year}, {mintage}, '{mint_letter}', '{comment}');\n")
 
 
 def main():
-    coin_details()
+    # coin_details()
     coin_years()
 
 
