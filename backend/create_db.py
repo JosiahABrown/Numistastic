@@ -1,29 +1,39 @@
 import sqlite3
+import csv
 
 DB = './db/coins.db'
 
+def convert(list):
+    return tuple(list)
 
-def create_tables():
-    conn = sqlite3.connect(DB)
-    print(f"=== Connected to the {DB[-8:-3]} Database ===")
-    c = conn.cursor()
+class Database:
+    def __init__(self, database_name):
+        if not isinstance(database_name, str):
+            raise TypeError('database_name must be a string')
+        self.conn = sqlite3.connect(database_name)
+        self.c = self.conn.cursor()
 
-    print("Reading SQL")
-    with open('sql_files/coins_table.sql', 'r') as fd:
-        sqlfile = fd.read()
+        # Enable foriegn key support
+        self.conn.execute("PRAGMA foriegn_keys = ON")
+        self.conn.commit()
 
-    sqlcommands = sqlfile.split(';')
+    def execute_sql_file(self, file_path):
+        # Read file
+        with open(file_path, 'r') as f:
+            sqlfile = f.read()
 
-    print("Executing SQL")
-    for command in sqlcommands:
-        try:
-            c.execute(command)
-        except sqlite3.OperationalError:
-            print("Operational Error. Commmand skipped.")
+        self.c.executescript(sqlfile)
 
-    conn.commit()
-    conn.close()
-    print("=== Connection Closed ===")
+        # Commit commands
+        self.conn.commit()
+
+    def close(self):
+        self.conn.close()
 
 
-create_tables()
+if __name__ == '__main__':
+    db = Database(DB)
+    # db.execute_sql_file('sql_files/coins_table.sql')
+    # db.execute_sql_file('sql_files/us_coin_details.sql')
+    db.execute_sql_file('sql_files/us_coin_years.sql')
+    db.close()
